@@ -8,4 +8,5 @@ seaborn
 jupyter
 catboost
 xgboost
+Flask
 #-e .
