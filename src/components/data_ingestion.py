@@ -1,10 +1,14 @@
 import os
 import sys
 import pandas as pd
+from dataclasses import dataclass
 from sklearn.model_selection import train_test_split
 from src.exception import CustomException
 from src.logger import logging
-from dataclasses import dataclass
+from src.components.data_transformation import DataTransformationConfig, DataTransformation
+from src.components.model_trainer import ModelTrainerConfig, ModelTrainer
+from src.utils import save_object, evaluate_models
+
 
 @dataclass
 class DataIngestionConfig:
@@ -12,54 +16,64 @@ class DataIngestionConfig:
     test_data_path: str = os.path.join('artifacts', "test.csv")
     raw_data_path: str = os.path.join('artifacts', "data.csv")
 
+
 class DataIngestion:
     def __init__(self):
         self.ingestion_config = DataIngestionConfig()
 
     def initiate_data_ingestion(self):
-        logging.info("Entered the data ingestion method or component")
+        """
+        Handles data ingestion: Reads raw data, splits it into train and test sets, and saves them.
+        """
+        logging.info("Starting data ingestion process.")
         try:
-            # Verify the path to the file first
-            file_path = 'notebook/data/stud.csv'  # Update with the correct relative or absolute path
-            logging.info(f"Attempting to read file from: {file_path}")
-
-            # Check if file exists
+            # Define the file path for raw data
+            file_path = 'notebook/data/stud.csv'
             if not os.path.exists(file_path):
-                logging.error(f"File not found at {file_path}")
+                logging.error(f"File not found: {file_path}")
                 raise FileNotFoundError(f"File not found: {file_path}")
 
-            # Read the CSV file
+            # Load the dataset
             df = pd.read_csv(file_path)
-            logging.info(f"File read successfully. Shape of data: {df.shape}")
+            logging.info(f"Dataset loaded successfully with shape: {df.shape}")
 
-            # Ensure the 'artifacts' directory exists
+            # Create the artifacts directory
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
 
             # Save raw data
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
-            logging.info("Raw data saved successfully")
 
-            # Train-test split
-            logging.info("Train-test split initiated")
+            # Split the dataset into train and test sets
             train_set, test_set = train_test_split(df, test_size=0.2, random_state=42)
-
-            # Save train and test sets
             train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
             test_set.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
 
-            logging.info("Data ingestion completed successfully")
-
+            logging.info("Data ingestion completed successfully.")
             return self.ingestion_config.train_data_path, self.ingestion_config.test_data_path
 
         except Exception as e:
-            logging.error(f"Error occurred: {str(e)}")
+            logging.error(f"Error in data ingestion: {str(e)}")
             raise CustomException(e, sys)
 
+
 if __name__ == "__main__":
-    obj = DataIngestion()
     try:
-        train_data, test_data = obj.initiate_data_ingestion()
-        logging.info(f"Train data saved at: {train_data}")
-        logging.info(f"Test data saved at: {test_data}")
+        # Step 1: Data Ingestion
+        data_ingestion = DataIngestion()
+        train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()
+        logging.info(f"Data ingestion completed. Train data: {train_data_path}, Test data: {test_data_path}")
+
+        # Step 2: Data Transformation
+        data_transformation = DataTransformation()
+        train_array, test_array, preprocessor_path = data_transformation.initiate_data_transformation(
+            train_path=train_data_path, test_path=test_data_path
+        )
+        logging.info(f"Data transformation completed. Preprocessor saved at: {preprocessor_path}")
+
+        # Step 3: Model Training
+        model_trainer = ModelTrainer()
+        r2_score = model_trainer.initiate_model_training(train_array=train_array, test_array=test_array)
+        logging.info(f"Model training completed with R2 score: {r2_score}")
+
     except Exception as e:
-        logging.error(f"Data ingestion failed: {str(e)}")
+        logging.error(f"Pipeline failed: {str(e)}")
