@@ -1,7 +1,6 @@
-import pickle
 import os
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
+import pickle
+import dill
 
 def save_object(file_path, obj):
     """
@@ -14,35 +13,14 @@ def save_object(file_path, obj):
     except Exception as e:
         raise Exception(f"Error saving object to {file_path}: {str(e)}")
 
-
-from sklearn.metrics import r2_score
-
-def evaluate_models(X_train, y_train, X_test, y_test, models):
+def load_object(file_path):
     """
-    Trains and evaluates multiple models and returns their R2 scores.
-    
-    Args:
-        X_train: Training feature set.
-        y_train: Training target set.
-        X_test: Testing feature set.
-        y_test: Testing target set.
-        models: Dictionary of models to train and evaluate.
-        
-    Returns:
-        A dictionary with model names as keys and R2 scores as values.
+    Loads a Python object from a pickle file.
     """
-    model_report = {}
-    for name, model in models.items():
-        try:
-            # Train the model
-            model.fit(X_train, y_train)
-            
-            # Predict on the test set
-            y_pred = model.predict(X_test)
-            
-            # Calculate R2 score
-            r2 = r2_score(y_test, y_pred)
-            model_report[name] = r2
-        except Exception as e:
-            print(f"Model {name} failed to train due to: {e}")
-    return model_report
+    try:
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"{file_path} does not exist.")
+        with open(file_path, 'rb') as file_obj:
+            return dill.load(file_obj)
+    except Exception as e:
+        raise Exception(f"Error loading object from {file_path}: {str(e)}")
