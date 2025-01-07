@@ -29,7 +29,7 @@ pipeline = Pipeline([
 pipeline.fit(X_train, y_train)
 
 # Save preprocessor and model separately
-save_object('artifacts/preprocessors.pkl', preprocessor)
+save_object('artifacts/preprocessor.pkl', preprocessor)
 save_object('artifacts/model.pkl', model)
 
 print("Training complete. Artifacts saved.")

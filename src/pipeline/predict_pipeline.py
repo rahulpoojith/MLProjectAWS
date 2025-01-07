@@ -11,7 +11,7 @@ class PredictPipeline:
         """
         try:
             model_path = 'artifacts/model.pkl'
-            preprocessors_path = 'artifacts/preprocessors.pkl'
+            preprocessors_path = 'artifacts/preprocessor.pkl'
 
             # Load the model and preprocessors
             model = load_object(file_path=model_path)
