@@ -114,5 +114,4 @@ This project is licensed under [MIT License](LICENSE).
 
 ---
 
-## **Contributors**
-- [Your Name/Team Name]
+
