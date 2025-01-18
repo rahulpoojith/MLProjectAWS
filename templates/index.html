@@ -4,17 +4,26 @@
     <title>Student Exam Performance Prediction</title>
     <style>
         body {
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
             margin: 20px;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin: 10px 0 5px;
         }
         input[type="number"] {
-            width: 100px;
-            padding: 5px;
+            width: calc(100% - 20px);
+            padding: 8px;
             margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
             padding: 10px 20px;
@@ -22,6 +31,15 @@
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #prediction_result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #555;
         }
     </style>
 </head>
@@ -36,13 +54,5 @@
     </form>
 
     <div id="prediction_result"></div>
-
-    <script>
-        // JavaScript to handle the prediction result (optional)
-        function displayPrediction(prediction) {
-            const resultDiv = document.getElementById("prediction_result");
-            resultDiv.innerHTML = `Predicted Score: ${prediction}`;
-        }
-    </script>
 </body>
 </html>
